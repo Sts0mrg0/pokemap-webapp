@@ -760,6 +760,11 @@ $(function () {
         CONFIG.accessToken = result.accessToken;
         localStorage.setItem('accessToken', result.accessToken);
 
+        // You can try using the default key... but it won't work for you, or not for long
+        if ('AIzaSyB0Dqa90ZCmlwh7oPHkgfr2-cMMkufLBQE' !== CONFIG.gmaps_key) {
+          $('.js-google-maps-key').hide();
+        }
+
         $('.js-login-container').hide();
 
         // TODO

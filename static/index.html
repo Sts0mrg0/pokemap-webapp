@@ -126,6 +126,21 @@
           If you use a fake location your account may be blocked by Pokemon GO,
           especially if you hop multiple locations.
         </p>
+        <div class="js-google-maps-key">
+          <h3>Get a Google Maps Key</h3>
+          <p>You need to
+          <a href="https://developers.google.com/maps/documentation/javascript/get-api-key">register for a Get a Google Maps Token</a>
+          or you will get errors that the you are past the daily limits.
+          <ul>
+            <li>Click 'Get A Key' (upper right)</li>
+            <li>Click 'Continue'</li>
+            <li>Click 'Continue' to Create a Project</li>
+            <li>Name your project whatever you want (such as Pokemap)</li>
+            <li>Copy the Key (starts with 'AI')</li>
+            <li>Put the key in <code>node-pokemap/PokemonGo-Map-web-client/static/config.js</code></li>
+          </ul>
+          </p>
+        </div>
         <button type="button" class="js-geolocation">Allow using my Location</button>
         <br>
         <label>Manual Location</label><input type="text" class="js-location" />
