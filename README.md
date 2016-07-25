@@ -43,7 +43,8 @@ Do you use **Linux**?
 
 ## Warnings
 
-Using this software may be against the Pokemon GO Terms of Service.
+Using this web app may be against the Pokemon GO Terms of Service.
+
 If you do things that are against the nature of the game such as
 hop locations,
 login with the same account to this service and the game,
