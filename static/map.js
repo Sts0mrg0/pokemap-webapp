@@ -157,6 +157,7 @@ function initMapHelper(center_lat, center_lng, cb) {
 }
 
 function initMap() {
+  // NOTE: used by Google Maps and on document load
   if (CONFIG.requireLogin && !CONFIG.accessToken) {
     return;
   }
@@ -762,7 +763,7 @@ $(function () {
         $('.js-login-container').hide();
 
         // TODO
-        if (false && localStorage.geoIsAllowed) {
+        if (localStorage.geoIsAllowed) {
           $('.js-geolocation-container').hide();
           updateGeolocation();
         } else {
@@ -775,5 +776,9 @@ $(function () {
   if (CONFIG.requireLogin && !CONFIG.accessToken) {
     $('.js-login-container').show();
     return;
+  }
+  else {
+    // this init is also called by Google Maps load
+    initMap();
   }
 });
