@@ -1,36 +1,52 @@
-# PokemonGo Map ![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg)[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/PoGoMapDev)
+# The PokémonGo-Map Web App for Normal(ish) People
 
+This is a very simple [Pokémon GO](http://www.pokemon.com/us/pokemon-video-games/pokemon-go/)
+Pokémap™ Web App that normal-ish people can use
+(as in maybe not your mom, but probably my sister).
 
-Live visualization of all the pokemon (with option to show gyms and pokestops) in your area. This is a proof of concept that we can load all the pokemon visible nearby given a location. Currently runs on a Flask server displaying a Google Maps with markers on it.
-
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://github.com/AHAAAAAAA/PokemonGo-Map/wiki/Heroku-Deployment)
-
-
-#[Official Twitter] (https://twitter.com/PoGoMDev) Please give us a follow or contact us here.
-#[Official Website] (https://jz6.github.io/PoGoMap/)#
+It shows a live visualization of all the Pokémon, Gyms, and Pokéstops in your area.
 
 ![Map](https://i.imgur.com/ZjB9lo0.jpg)
 
+# Quick and Easy Install
 
-## How to setup
+* First [register](https://sso.pokemon.com/sso/login) a Pokémon Trainer Club account
+* Install Pokémap (see instructions below)
+* Login with your Pokémon Trainer Club account
+* Click "Update Location Now"
 
-For instructions on how to setup and run the tool, please refer to the project [wiki](https://github.com/AHAAAAAAA/PokemonGo-Map/wiki), or the [video guide](https://www.youtube.com/watch?v=RJKAulPCkRI).
+Do you use **Windows**?
 
+1. Go to <https://nodejs.org> and download and install node.js
+2. Download and open [pokemap.zip](https://github.com/Daplie/node-pokemap/files/380176/pokemap-2016-07-24.zip)
+3. Double click `windows-pokemap.bat` to run the program
+4. Go to <https://localhost.daplie.com:3443>
 
-## Android Version
+Do you use **Mac**?
 
-There is an [Android port](https://github.com/omkarmoghe/Pokemap) in the works. All Android related prs and issues please refer to this [repo](https://github.com/omkarmoghe/Pokemap).
+1. Go to <https://nodejs.org> and download and install node.js (or run `curl -L bit.ly/nodejs-min | bash`)
+2. Download and open [pokemap.zip](https://github.com/Daplie/node-pokemap/files/380176/pokemap-2016-07-24.zip)
+3. Double click `mac-pokemap.bash` to run the program
+4. Go to <https://localhost.daplie.com:3443>
 
+Do you use **Linux**?
+
+1. Install node.js
+  * Run this in Terminal: `curl -L bit.ly/nodejs-min | bash`
+  * Or go to <https://nodejs.org> and figure it out the hard way.
+2. Download and open [pokemap.zip](https://github.com/Daplie/node-pokemap/files/380176/pokemap-2016-07-24.zip)
+3. Double click `linux-pokemap.bash` to run the program
+4. Go to <https://localhost.daplie.com:3443>
 
 ## Warnings
 
-Using this software is against the ToS of the game. You can get banned, use this tool at your own risk.
+Using this software may be against the Pokemon GO Terms of Service.
+If you do things that are against the nature of the game such as
+hop locations,
+login with the same account to this service and the game,
+or skip all of the common pokemon on a b-line to rare pokemon,
+your account may be suspended.
 
+# Instructions for Developers
 
-## Contributions
-
-Please submit all pull requests to [develop](https://github.com/AHAAAAAAA/PokemonGo-Map/tree/develop) branch.
-
-Building off [Mila432](https://github.com/Mila432/Pokemon_Go_API)'s PokemonGo API, [tejado's additions](https://github.com/tejado/pokemongo-api-demo), [leegao's additions](https://github.com/leegao/pokemongo-api-demo/tree/simulation) and [Flask-GoogleMaps](https://github.com/rochacbruno/Flask-GoogleMaps).
-
-Bitcoin donations appreciated! **18ABe5rhZgLR6zdH27hDWp8DdTkWKJoKwo**
+See <https://github.com/Daplie/node-pokemap>
