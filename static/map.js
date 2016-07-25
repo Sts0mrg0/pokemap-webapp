@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     if (!Notification) {
-        console.log('could not load notifications');
+        console.warning('could not load notifications');
         return;
     }
 
@@ -15,7 +15,7 @@ var $selectNotify = $("#notify-pokemon");
 var idToPokemon = {};
 
 $.getJSON("static/locales/pokemon." + document.documentElement.lang + ".json").done(function(data) {
-    var pokeList = []
+    var pokeList = [];
 
     $.each(data, function(key, value) {
         pokeList.push( { id: key, text: value } );
@@ -74,10 +74,9 @@ function initMapHelper(center_lat, center_lng, cb) {
       $('.js-map').show();
     }
 
-    if (!CONFIG.latitude) {
+    if (0 === center_lat) {
       return;
     }
-
 
     map = new google.maps.Map(document.getElementById('map'), {
         center: {
@@ -87,8 +86,8 @@ function initMapHelper(center_lat, center_lng, cb) {
         zoom: 16,
         fullscreenControl: true,
         streetViewControl: false,
-		mapTypeControl: true,
-		mapTypeControlOptions: {
+        mapTypeControl: true,
+        mapTypeControlOptions: {
           style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
           position: google.maps.ControlPosition.RIGHT_TOP,
           mapTypeIds: [
@@ -96,37 +95,38 @@ function initMapHelper(center_lat, center_lng, cb) {
               google.maps.MapTypeId.SATELLITE,
               'dark_style',
               'style_light2',
-              'style_pgo']
-        },
+              'style_pgo'
+          ]
+        }
     });
 
-	var style_dark = new google.maps.StyledMapType(darkStyle, {name: "Dark"});
-	map.mapTypes.set('dark_style', style_dark);
+    var style_dark = new google.maps.StyledMapType(darkStyle, {name: "Dark"});
+    map.mapTypes.set('dark_style', style_dark);
 
-	var style_light2 = new google.maps.StyledMapType(light2Style, {name: "Light2"});
-	map.mapTypes.set('style_light2', style_light2);
+    var style_light2 = new google.maps.StyledMapType(light2Style, {name: "Light2"});
+    map.mapTypes.set('style_light2', style_light2);
 
-	var style_pgo = new google.maps.StyledMapType(pGoStyle, {name: "PokemonGo"});
-	map.mapTypes.set('style_pgo', style_pgo);
+    var style_pgo = new google.maps.StyledMapType(pGoStyle, {name: "PokemonGo"});
+    map.mapTypes.set('style_pgo', style_pgo);
 
     map.addListener('maptypeid_changed', function(s) {
-        localStorage['map_style'] = this.mapTypeId;
+      localStorage['map_style'] = this.mapTypeId;
     });
 
     if (!localStorage['map_style'] || localStorage['map_style'] === 'undefined') {
-        localStorage['map_style'] = 'roadmap';
+      localStorage['map_style'] = 'roadmap';
     }
 
     map.setMapTypeId(localStorage['map_style']);
 
     marker = new google.maps.Marker({
-        draggable: true,
-        position: {
-            lat: center_lat,
-            lng: center_lng
-        },
-        map: map,
-        animation: google.maps.Animation.DROP
+      draggable: true,
+      position: {
+        lat: center_lat,
+        lng: center_lng
+      },
+      map: map,
+      animation: google.maps.Animation.DROP
     });
 
     google.maps.event.addListener(marker, "dragend", function (event) {
@@ -150,10 +150,14 @@ function initMap() {
     return;
   }
 
+  updateMap();
+
   // wait for user to click to update
+  /*
   if (localStorage.geoIsAllowed) {
     updateGeolocation();
   }
+  */
 }
 
 function initSidebar() {
@@ -290,10 +294,10 @@ function scannedLabel(last_modified) {
 };
 
 // Dicts
-map_pokemons = {} // Pokemon
-map_gyms = {} // Gyms
-map_pokestops = {} // Pokestops
-map_scanned = {} // Pokestops
+var map_pokemons = {} // Pokemon
+var map_gyms = {} // Gyms
+var map_pokestops = {} // Pokestops
+var map_scanned = {} // Pokestops
 var gym_types = ["Uncontested", "Mystic", "Valor", "Instinct"];
 var audio = new Audio('https://github.com/AHAAAAAAA/PokemonGo-Map/raw/develop/static/sounds/ding.mp3');
 
@@ -435,7 +439,11 @@ function clearStaleMarkers() {
     });
 };
 
-function updateMap() {
+function updateMap(lat, lng) {
+    if ('number' === typeof lat && 'number' === typeof lng) {
+      CONFIG.latitude = lat;
+      CONFIG.longitude = lon;
+    }
 
     initMapHelper(CONFIG.latitude, CONFIG.longitude, function () {
 
@@ -638,7 +646,9 @@ function logout() {
 }
 
 function updateGeolocation() {
+
   function updatePos(position) {
+
     if (!localStorage.geoIsAllowed) {
       $('.js-geolocation-container').hide();
       localStorage.geoIsAllowed = 'true';
@@ -648,6 +658,7 @@ function updateGeolocation() {
     CONFIG.longitude = position.coords.longitude;
 
     initMapHelper(CONFIG.latitude, CONFIG.longitude, function () {
+
       CONFIG.marker.setPosition(new google.maps.LatLng(CONFIG.latitude, CONFIG.longitude));
       // http://stackoverflow.com/questions/10917648/google-maps-api-v3-recenter-the-map-to-a-marker
       map.setCenter(marker.getPosition());
@@ -655,7 +666,16 @@ function updateGeolocation() {
     });
   }
 
-  window.navigator.geolocation.getCurrentPosition(updatePos);
+  window.navigator.geolocation.getCurrentPosition(
+    updatePos
+  , function (err) {
+      window.alert("No new location.");
+    }
+  , { enableHighAccuracy: true
+    , timeout: 10 * 1000
+    , maximumAge: 0
+    }
+  );
 
   if (!CONFIG.watchGeo) {
     CONFIG.watchGeo = navigator.geolocation.watchPosition(updatePos);
@@ -682,8 +702,19 @@ $(function () {
     ev.preventDefault();
     ev.stopPropagation();
 
-    // TODO XXX
-    updateGeolocation();
+    var geocoder = new google.maps.Geocoder();
+    var address = $('.js-location').val();
+
+    geocoder.geocode({ 'address': address }, function (results, status) {
+      if (status !== google.maps.GeocoderStatus.OK) {
+        window.alert('Geocode was not successful for the following reason: ' + status);
+      }
+
+      CONFIG.latitude = results[0].geometry.location.lat();
+      CONFIG.longitude = results[0].geometry.location.lng();
+
+      updateMap();
+    });
   });
 
   $('body').on('submit', 'form.js-login-form', function (ev) {
