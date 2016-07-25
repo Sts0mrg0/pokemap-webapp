@@ -32,22 +32,15 @@ module.exports = function(grunt) {
   		css: {
   			files: '**/*.css',
   			options: { livereload: true },
-  			tasks: ['sass', 'cssmin']
+  			tasks: []
   		}
     }
   });
 
-  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-sass');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-cssmin');
-  grunt.loadNpmTasks('grunt-usemin');
-  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-html-validation');
 
-  grunt.registerTask('default', ['jshint', 'sass', 'cssmin', 'uglify', 'watch']);
+  grunt.registerTask('default', ['jshint', 'watch']);
 
 };
