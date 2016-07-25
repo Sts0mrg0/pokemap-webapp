@@ -116,21 +116,50 @@
 			<!-- <button id="trigger-overlay">Test overlay</button> -->
 		</nav>
 
-    <div class="js-login-container"><form class="js-login-form">
+    <div class="js-setup-container">
+      <div class="js-geolocation-container">
         <br>
         <br>
         <br>
-        <label>Username</label><input type="text" class="js-username" />
-        <label>Password</label><input type="password" class="js-password" />
-        <label>Login Type</label><select class="js-provider">
-          <option value="ptc" selected=selected>Pokémon Trainer Club</option>
-          <option value="google">Google</option>
-        </select>
+        <h3>Use your real location</h3>
+        <p>
+          If you use a fake location your account may be blocked by Pokemon GO,
+          especially if you hop multiple locations.
+        </p>
+        <button type="button" class="js-geolocation">Allow using my Location</button>
         <br>
-        <button type="submit">Login</button>
-    </form></div>
+        <label>Manual Location</label><input type="text" class="js-location" />
+        <button type="button" class="js-manual-location">Use Manual Location</button>
+      </div>
+      <div class="js-login-container"><form class="js-login-form">
+          <br>
+          <br>
+          <br>
+          <h3>Only sign in with one account at a time</h3>
+          <p>
+            You cannot use Pokemon GO and Pokemap with the same account at the same time or
+            you may be blocked by the Pokemon GO.
+          </p>
+          <h3>Use your Pokemon Trainer Account</h3>
+          <p>
+            <a href="https://www.pokemon.com/us/pokemon-trainer-club/sign-up">Register on Pokemon.com</a>
+            for a <a href="https://www.pokemon.com/us/pokemon-trainer-club/sign-up">Pokemon Trainer Account</a>.
+            You can use your Google Account, but using a PTC may be more private.
+          </p>
+          <label>Username</label><input type="text" class="js-username" />
+          <label>Password</label><input type="password" class="js-password" />
+          <label>Login Type</label><select class="js-provider">
+            <option value="ptc" selected=selected>Pokémon Trainer Club</option>
+            <option value="google">Google</option>
+          </select>
+          <br>
+          <button type="submit">Login</button>
+      </form></div>
+    </div>
 
-		<div id="map" class="js-map"></div>
+    <div class="js-pokemap-container">
+      <div id="map" class="js-map"></div>
+    </div>
 
 		<div class="overlay overlay-contentscale">
 			<button type="button" class="overlay-close">Close</button>

@@ -2,8 +2,8 @@
 
 // CHANGE ME
 window.CONFIG = {
-  latitude: 40.2338438
-, longitude: -111.65853370000002
+  latitude: 0
+, longitude: 0
 , gmaps_key: 'AIzaSyB0Dqa90ZCmlwh7oPHkgfr2-cMMkufLBQE'
 , requireLogin: true
 };

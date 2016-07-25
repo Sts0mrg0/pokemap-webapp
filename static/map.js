@@ -63,7 +63,20 @@ var pGoStyle=[{"featureType":"landscape.man_made","elementType":"geometry.fill",
 
 var selectedStyle = 'light';
 
-function initMapHelper(center_lat, center_lng) {
+function initMapHelper(center_lat, center_lng, cb) {
+    if (map) {
+      if (cb) {
+        cb();
+      }
+      return;
+    }
+    else {
+      $('.js-map').show();
+    }
+
+    if (!CONFIG.latitude) {
+      return;
+    }
 
 
     map = new google.maps.Map(document.getElementById('map'), {
@@ -128,17 +141,16 @@ function initMapHelper(center_lat, center_lng) {
     CONFIG.marker = marker;
 
     initSidebar();
-    updateMap();
     window.setInterval(updateMap, 5000);
-};
+    cb();
+}
 
 function initMap() {
   if (CONFIG.requireLogin && !CONFIG.accessToken) {
     return;
   }
 
-  initMapHelper(CONFIG.latitude, CONFIG.longitude);
-
+  // wait for user to click to update
   if (localStorage.geoIsAllowed) {
     updateGeolocation();
   }
@@ -425,6 +437,8 @@ function clearStaleMarkers() {
 
 function updateMap() {
 
+    initMapHelper(CONFIG.latitude, CONFIG.longitude, function () {
+
     localStorage.showPokemon = localStorage.showPokemon || true;
     localStorage.showGyms = localStorage.showGyms || true;
     localStorage.showPokestops = localStorage.showPokestops || false;
@@ -512,6 +526,8 @@ function updateMap() {
         });
 
         clearStaleMarkers();
+    });
+
     });
 };
 
@@ -616,20 +632,27 @@ function logout() {
   localStorage.removeItem('accessToken');
   //clearInterval(CONFIG.updateMapInterval);
   $('.js-map').hide();
-  $('.js-geolocation').hide();
+  //$('.js-geolocation').hide();
   $('.js-login-container').show();
+  $('.js-geolocation-container').hide();
 }
 
 function updateGeolocation() {
   function updatePos(position) {
-    localStorage.geoIsAllowed = 'true';
+    if (!localStorage.geoIsAllowed) {
+      $('.js-geolocation-container').hide();
+      localStorage.geoIsAllowed = 'true';
+    }
 
     CONFIG.latitude = position.coords.latitude;
     CONFIG.longitude = position.coords.longitude;
-    CONFIG.marker.setPosition(new google.maps.LatLng(CONFIG.latitude, CONFIG.longitude));
-    // http://stackoverflow.com/questions/10917648/google-maps-api-v3-recenter-the-map-to-a-marker
-    map.setCenter(marker.getPosition());
-    updateMap();
+
+    initMapHelper(CONFIG.latitude, CONFIG.longitude, function () {
+      CONFIG.marker.setPosition(new google.maps.LatLng(CONFIG.latitude, CONFIG.longitude));
+      // http://stackoverflow.com/questions/10917648/google-maps-api-v3-recenter-the-map-to-a-marker
+      map.setCenter(marker.getPosition());
+      updateMap();
+    });
   }
 
   window.navigator.geolocation.getCurrentPosition(updatePos);
@@ -642,18 +665,24 @@ function updateGeolocation() {
 $(function () {
   'use strict';
 
-  if (!CONFIG.requireLogin) {
-    $('.js-login-container').hide();
-    return;
-  }
-
+  // default state, show nothing
+  $('.js-login-container').hide();
+  $('.js-geolocation-container').hide();
   $('.js-map').hide();
-  $('.js-geolocation').hide();
+//  $('.js-geolocation').hide();
 
   $('body').on('click', '.js-geolocation', function (ev) {
     ev.preventDefault();
     ev.stopPropagation();
 
+    updateGeolocation();
+  });
+
+  $('body').on('click', '.js-manual-location', function (ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    // TODO XXX
     updateGeolocation();
   });
 
@@ -688,12 +717,21 @@ $(function () {
         CONFIG.accessToken = result.accessToken;
         localStorage.setItem('accessToken', result.accessToken);
 
-        $('.js-map').show();
-        $('.js-geolocation').show();
         $('.js-login-container').hide();
-        if (!map) {
-          initMap();
+
+        // TODO
+        if (false && localStorage.geoIsAllowed) {
+          $('.js-geolocation-container').hide();
+          updateGeolocation();
+        } else {
+          $('.js-geolocation-container').show();
         }
     });
   });
+
+  $('.js-map').hide();
+  if (CONFIG.requireLogin && !CONFIG.accessToken) {
+    $('.js-login-container').show();
+    return;
+  }
 });
