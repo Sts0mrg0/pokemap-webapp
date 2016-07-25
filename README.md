@@ -8,6 +8,16 @@ It shows a live visualization of all the Pokémon, Gyms, and Pokéstops in your 
 
 ![Map](https://i.imgur.com/ZjB9lo0.jpg)
 
+## Warnings
+
+Using this web app may be against the Pokemon GO Terms of Service.
+
+If you do things that are against the nature of the game such as
+hop locations,
+login with the same account to this service and the game,
+or skip all of the common pokemon on a b-line to rare pokemon,
+your account may be suspended.
+
 # Quick and Easy Install
 
 * First [register](https://sso.pokemon.com/sso/login) a Pokémon Trainer Club account
@@ -39,17 +49,6 @@ Do you use **Linux**?
 2. Download and open [pokemap.zip](https://github.com/Daplie/node-pokemap/files/382505/pokemap-2016-07-25.zip)
 3. Double click `linux-pokemap.bash` to run the program
 4. Go to <https://localhost.daplie.com:3443>
-
-
-## Warnings
-
-Using this web app may be against the Pokemon GO Terms of Service.
-
-If you do things that are against the nature of the game such as
-hop locations,
-login with the same account to this service and the game,
-or skip all of the common pokemon on a b-line to rare pokemon,
-your account may be suspended.
 
 # Instructions for Technical People
 
