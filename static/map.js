@@ -138,6 +138,17 @@ function initMapHelper(center_lat, center_lng, cb) {
       updateMap();
     });
 
+    google.maps.event.addListener(map, 'click', function (event) {
+      var lat = event.latLng.lat();
+      var lng = event.latLng.lng();
+
+      CONFIG.latitude = lat;
+      CONFIG.longitude = lng;
+      CONFIG.marker.setPosition(new google.maps.LatLng(CONFIG.latitude, CONFIG.longitude));
+
+      updateMap();
+    });
+
     CONFIG.marker = marker;
 
     initSidebar();
