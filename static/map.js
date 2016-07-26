@@ -224,7 +224,12 @@ function pokemonLabel(name, disappear_time, id, latitude, longitude) {
 }
 
 function gymLabel(team_name, team_id, gym_points) {
-    var gym_color = ["0, 0, 0, .4", "74, 138, 202, .6", "240, 68, 58, .6", "254, 217, 40, .6"];
+    var gym_color = [
+      "0, 0, 0, .4"
+    , "74, 138, 202, .6"
+    , "240, 68, 58, .6"
+    , "254, 217, 40, .6"
+    ];
     var str;
     if (team_id == 0) {
         str = `<div><center>
