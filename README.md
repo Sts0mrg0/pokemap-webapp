@@ -6,12 +6,10 @@ Pokémap™ Web App.
 Key Features
 ------------
 
-* Even normal-ish people (like you) can install and use it
-* (as in maybe not your mom, but probably my sister)
-* live visualization of nearby Pokémon, Gyms, and Pokéstops in your area
+* **Exact locations** of nearby **Pokémon**, **Gyms**, and **Pokéstops**, updated **live**
+* **Easy** to install - just a few downloads, even your mom (or at least your sister) can do it!
 * **Multiple people** can login at the same time
 * **Fast** (doesn't slow down as you use it longer)
-* **Easy** to install (just a few downloads, no compiling code)
 
 ![Map](https://i.imgur.com/ZjB9lo0.jpg)
 
