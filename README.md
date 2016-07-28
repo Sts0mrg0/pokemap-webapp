@@ -1,10 +1,17 @@
 # The Pokémon GO Map (Web App) for Normal(ish) People
 
 This is a very simple [Pokémon GO](http://www.pokemon.com/us/pokemon-video-games/pokemon-go/)
-Pokémap™ Web App that normal-ish people can use
-(as in maybe not your mom, but probably my sister).
+Pokémap™ Web App.
 
-It shows a live visualization of all the Pokémon, Gyms, and Pokéstops in your area.
+Key Features
+------------
+
+* Even normal-ish people (like you) can install and use it
+* (as in maybe not your mom, but probably my sister)
+* live visualization of nearby Pokémon, Gyms, and Pokéstops in your area
+* **Multiple people** can login at the same time
+* **Fast** (doesn't slow down as you use it longer)
+* **Easy** to install (just a few downloads, no compiling code)
 
 ![Map](https://i.imgur.com/ZjB9lo0.jpg)
 
