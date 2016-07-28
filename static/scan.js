@@ -36,6 +36,9 @@ function get_new_coords(init_loc, distance, bearingDegs) {
 }
 
 function generate_location_steps(initial_loc, step_count) {
+    if (!Array.isArray(initial_loc) && (2 === initial_loc.length || 3 === initial_loc.length)) {
+      throw new Error("generate_location_steps([lat, lng], step_count)");
+    }
     // Bearing (degrees)
     var NORTH = 0;
     var EAST = 90;

@@ -64,17 +64,21 @@ var pGoStyle=[{"featureType":"landscape.man_made","elementType":"geometry.fill",
 var selectedStyle = 'light';
 
 function initMapHelper(center_lat, center_lng, cb) {
+    if (!CONFIG.mapReady) {
+      console.log('ignore map init - google.maps object not yet loaded');
+      return;
+    }
     if (map) {
       if (cb) {
         cb();
       }
       return;
     }
-    else {
-      $('.js-map').show();
-    }
 
-    if (0 === center_lat) {
+    $('.js-map').show();
+
+    if (0 === center_lat || !center_lat) {
+      console.warn("Tried to init, but no lat/lng location given yet.");
       return;
     }
 
@@ -133,30 +137,28 @@ function initMapHelper(center_lat, center_lng, cb) {
       var lat = event.latLng.lat();
       var lng = event.latLng.lng();
 
-      CONFIG.latitude = lat;
-      CONFIG.longitude = lng;
-      updateMap();
+      updateLoc(lat, lng);
     });
 
     google.maps.event.addListener(map, 'click', function (event) {
       var lat = event.latLng.lat();
       var lng = event.latLng.lng();
 
-      CONFIG.latitude = lat;
-      CONFIG.longitude = lng;
       CONFIG.marker.setPosition(new google.maps.LatLng(CONFIG.latitude, CONFIG.longitude));
 
-      updateMap();
+      updateLoc(lat, lng);
     });
 
     CONFIG.marker = marker;
 
     initSidebar();
-    window.setInterval(updateMap, 5000);
+    window.setInterval(heartbeat, 2000);
     cb();
 }
 
 function initMap() {
+  CONFIG.mapReady = true;
+
   // NOTE: used by Google Maps and on document load
   if (CONFIG.requireLogin && !CONFIG.accessToken) {
     return;
@@ -189,8 +191,7 @@ function initSidebar() {
         }
 
         var loc = places[0].geometry.location;
-        CONFIG.latitude = loc.lat();
-        CONFIG.longitude = loc.lng();
+        updateLoc(loc.lat(), loc.lng());
         $.post("next_loc?lat=" + loc.lat() + "&lon=" + loc.lng(), {}).done(function (data) {
             $("#next-location").val("");
             map.setCenter(loc);
@@ -456,140 +457,174 @@ function clearStaleMarkers() {
     });
 };
 
-function updateMap(lat, lng) {
-    if ('number' === typeof lat && 'number' === typeof lng) {
-      CONFIG.latitude = lat;
-      CONFIG.longitude = lon;
+function updateMap() {
+  if (!CONFIG.pokemap) {
+    console.log('updateMap ignored - waiting for first heartbeat');
+    return;
+  }
+
+  initMapHelper(CONFIG.latitude, CONFIG.longitude, function () {
+
+  var result = CONFIG.pokemap;
+
+  $.each(result.pokemons, function(i, item){
+    if (!localStorage.showPokemon) {
+        return false; // in case the checkbox was unchecked in the meantime.
     }
+    if (!(item.encounter_id in map_pokemons) &&
+              excludedPokemon.indexOf(item.pokemon_id) < 0) {
+        // add marker to map and item to dict
+        if (item.marker) item.marker.setMap(null);
+        item.marker = setupPokemonMarker(item);
+        map_pokemons[item.encounter_id] = item;
+    }
+  });
 
-    initMapHelper(CONFIG.latitude, CONFIG.longitude, function () {
+  $.each(result.pokestops, function(i, item) {
+      if (!localStorage.showPokestops) {
+          return false;
+      } else if (!(item.pokestop_id in map_pokestops)) { // add marker to map and item to dict
+          // add marker to map and item to dict
+          if (item.marker) item.marker.setMap(null);
+          item.marker = setupPokestopMarker(item);
+          map_pokestops[item.pokestop_id] = item;
+      }
 
-    localStorage.showPokemon = localStorage.showPokemon || true;
-    localStorage.showGyms = localStorage.showGyms || true;
-    localStorage.showPokestops = localStorage.showPokestops || false;
-    localStorage.showScanned = localStorage.showScanned || false;
+  });
 
-    $.ajax({
-        url: "raw_data",
-        method: 'GET',
-        data: {
-            'latitude': CONFIG.latitude,
-            'longitude': CONFIG.longitude,
-            'pokemon': localStorage.showPokemon,
-            'pokestops': localStorage.showPokestops,
-            'gyms': localStorage.showGyms,
-            'scanned': localStorage.showScanned
-        },
-        headers: {
-          'Authorization': 'Bearer ' + CONFIG.accessToken
-        },
-        dataType: "json"
-    }).done(function(result) {
-      $.each(result.pokemons, function(i, item){
-          if (!localStorage.showPokemon) {
-              return false; // in case the checkbox was unchecked in the meantime.
+  $.each(result.gyms, function(i, item){
+      if (!localStorage.showGyms) {
+          return false; // in case the checkbox was unchecked in the meantime.
+      }
+
+      if (item.gym_id in map_gyms) {
+          // if team has changed, create new marker (new icon)
+          if (map_gyms[item.gym_id].team_id != item.team_id) {
+              map_gyms[item.gym_id].marker.setMap(null);
+              map_gyms[item.gym_id].marker = setupGymMarker(item);
+          } else { // if it hasn't changed generate new label only (in case prestige has changed)
+              map_gyms[item.gym_id].marker.infoWindow = new google.maps.InfoWindow({
+                  content: gymLabel(gym_types[item.team_id], item.team_id, item.gym_points)
+              });
           }
-          if (!(item.encounter_id in map_pokemons) &&
-                    excludedPokemon.indexOf(item.pokemon_id) < 0) {
-              // add marker to map and item to dict
-              if (item.marker) item.marker.setMap(null);
-              item.marker = setupPokemonMarker(item);
-              map_pokemons[item.encounter_id] = item;
-          }
-        });
+      }
+      else { // add marker to map and item to dict
+          if (item.marker) item.marker.setMap(null);
+          item.marker = setupGymMarker(item);
+          map_gyms[item.gym_id] = item;
+      }
 
-        $.each(result.pokestops, function(i, item) {
-            if (!localStorage.showPokestops) {
-                return false;
-            } else if (!(item.pokestop_id in map_pokestops)) { // add marker to map and item to dict
-                // add marker to map and item to dict
-                if (item.marker) item.marker.setMap(null);
-                item.marker = setupPokestopMarker(item);
-                map_pokestops[item.pokestop_id] = item;
-            }
+  });
 
-        });
+  $.each(result.scanned, function(i, item) {
+      if (!localStorage.showScanned) {
+          return false;
+      }
 
-        $.each(result.gyms, function(i, item){
-            if (!localStorage.showGyms) {
-                return false; // in case the checkbox was unchecked in the meantime.
-            }
+      if (item.scanned_id in map_scanned) {
+          map_scanned[item.scanned_id].marker.setOptions({fillColor: getColorByDate(item.last_modified)});
+      }
+      else { // add marker to map and item to dict
+          if (item.marker) item.marker.setMap(null);
+          item.marker = setupScannedMarker(item);
+          map_scanned[item.scanned_id] = item;
+      }
 
-            if (item.gym_id in map_gyms) {
-                // if team has changed, create new marker (new icon)
-                if (map_gyms[item.gym_id].team_id != item.team_id) {
-                    map_gyms[item.gym_id].marker.setMap(null);
-                    map_gyms[item.gym_id].marker = setupGymMarker(item);
-                } else { // if it hasn't changed generate new label only (in case prestige has changed)
-                    map_gyms[item.gym_id].marker.infoWindow = new google.maps.InfoWindow({
-                        content: gymLabel(gym_types[item.team_id], item.team_id, item.gym_points)
-                    });
-                }
-            }
-            else { // add marker to map and item to dict
-                if (item.marker) item.marker.setMap(null);
-                item.marker = setupGymMarker(item);
-                map_gyms[item.gym_id] = item;
-            }
+  });
 
-        });
+  clearStaleMarkers();
 
-        $.each(result.scanned, function(i, item) {
-            if (!localStorage.showScanned) {
-                return false;
-            }
+  });
+}
 
-            if (item.scanned_id in map_scanned) {
-                map_scanned[item.scanned_id].marker.setOptions({fillColor: getColorByDate(item.last_modified)});
-            }
-            else { // add marker to map and item to dict
-                if (item.marker) item.marker.setMap(null);
-                item.marker = setupScannedMarker(item);
-                map_scanned[item.scanned_id] = item;
-            }
+function heartbeat() {
+  if (!CONFIG.latitude || !CONFIG.longitude) {
+    console.log('heartbeat ignored - waiting for lat/lng update');
+    return;
+  }
 
-        });
+  CONFIG.latitude = CONFIG.scan[CONFIG.scanIndex][0];
+  CONFIG.longitude = CONFIG.scan[CONFIG.scanIndex][1];
+  CONFIG.scanIndex += 1;
+  if (CONFIG.scanIndex >= CONFIG.scan.length) {
+    CONFIG.scanIndex = 0;
+  }
+  CONFIG.marker.setPosition(new google.maps.LatLng(CONFIG.latitude, CONFIG.longitude));
 
-        clearStaleMarkers();
-    });
+  localStorage.showPokemon = localStorage.showPokemon || true;
+  localStorage.showGyms = localStorage.showGyms || true;
+  localStorage.showPokestops = localStorage.showPokestops || false;
+  localStorage.showScanned = localStorage.showScanned || false;
 
-    });
+  $.ajax({
+      url: "raw_data",
+      method: 'GET',
+      data: {
+          'latitude': CONFIG.latitude,
+          'longitude': CONFIG.longitude,
+          'pokemon': localStorage.showPokemon,
+          'pokestops': localStorage.showPokestops,
+          'gyms': localStorage.showGyms,
+          'scanned': localStorage.showScanned
+      },
+      headers: {
+        'Authorization': 'Bearer ' + CONFIG.accessToken
+      },
+      dataType: "json"
+  }).done(function(result) {
+    CONFIG.pokemap = result;
+    return updateMap();
+  });
 };
+
+function updateLoc(lat, lng) {
+  if (lat && lng && 'number' === typeof lat && 'number' === typeof lng) {
+    if (!CONFIG.scan || lat !== CONFIG.latitude || lng !== CONFIG.longitude) {
+      CONFIG.latitude = lat;
+      CONFIG.longitude = lng;
+      CONFIG.scanIndex = 0;
+      console.warn(CONFIG.latitude, CONFIG.longitude);
+      CONFIG.scan = window.generateLocationSteps([CONFIG.latitude, CONFIG.longitude], 4);
+    }
+  }
+
+  return updateMap();
+}
 
 document.getElementById('gyms-switch').onclick = function() {
     localStorage["showGyms"] = this.checked;
     if (this.checked) {
-        updateMap();
-    } else {
-        $.each(map_gyms, function(key, value) {
-            map_gyms[key].marker.setMap(null);
-        });
-        map_gyms = {}
+        return updateMap();
     }
+
+    $.each(map_gyms, function(key, value) {
+        map_gyms[key].marker.setMap(null);
+    });
+    map_gyms = {}
 };
 
 $('#pokemon-switch').change(function() {
     localStorage["showPokemon"] = this.checked;
     if (this.checked) {
-        updateMap();
-    } else {
-        $.each(map_pokemons, function(key, value) {
-            map_pokemons[key].marker.setMap(null);
-        });
-        map_pokemons = {}
+        return updateMap();
     }
+
+    $.each(map_pokemons, function(key, value) {
+        map_pokemons[key].marker.setMap(null);
+    });
+    map_pokemons = {}
 });
 
 $('#pokestops-switch').change(function() {
     localStorage["showPokestops"] = this.checked;
     if (this.checked) {
-        updateMap();
-    } else {
-        $.each(map_pokestops, function(key, value) {
-            map_pokestops[key].marker.setMap(null);
-        });
-        map_pokestops = {}
+        return updateMap();
     }
+
+    $.each(map_pokestops, function(key, value) {
+        map_pokestops[key].marker.setMap(null);
+    });
+    map_pokestops = {}
 });
 
 $('#sound-switch').change(function() {
@@ -600,12 +635,12 @@ $('#scanned-switch').change(function() {
     localStorage["showScanned"] = this.checked;
     if (this.checked) {
         updateMap();
-    } else {
-        $.each(map_scanned, function(key, value) {
-            map_scanned[key].marker.setMap(null);
-        });
-        map_scanned = {}
     }
+
+    $.each(map_scanned, function(key, value) {
+        map_scanned[key].marker.setMap(null);
+    });
+    map_scanned = {}
 });
 
 var updateLabelDiffTime = function() {
@@ -665,24 +700,23 @@ function logout() {
 function updateGeolocation() {
 
   function updatePos(position) {
+    console.log("Got geolocation from browser :D");
+    console.info(position);
 
     if (!localStorage.geoIsAllowed) {
       $('.js-geolocation-container').hide();
       localStorage.geoIsAllowed = 'true';
     }
 
-    CONFIG.latitude = position.coords.latitude;
-    CONFIG.longitude = position.coords.longitude;
-
-    initMapHelper(CONFIG.latitude, CONFIG.longitude, function () {
-
+    initMapHelper(position.coords.latitude, position.coords.longitude, function () {
       CONFIG.marker.setPosition(new google.maps.LatLng(CONFIG.latitude, CONFIG.longitude));
       // http://stackoverflow.com/questions/10917648/google-maps-api-v3-recenter-the-map-to-a-marker
       map.setCenter(marker.getPosition());
-      updateMap();
+      updateLoc(position.coords.latitude, position.coords.longitude);
     });
   }
 
+  console.log("Waiting for geolocation from browser");
   window.navigator.geolocation.getCurrentPosition(
     updatePos
   , function (err) {
@@ -727,10 +761,7 @@ $(function () {
         window.alert('Geocode was not successful for the following reason: ' + status);
       }
 
-      CONFIG.latitude = results[0].geometry.location.lat();
-      CONFIG.longitude = results[0].geometry.location.lng();
-
-      updateMap();
+      updateLoc(results[0].geometry.location.lat(), results[0].geometry.location.lng());
     });
   });
 
@@ -789,6 +820,6 @@ $(function () {
   }
   else {
     // this init is also called by Google Maps load
-    initMap();
+    $('.js-geolocation-container').show();
   }
 });
