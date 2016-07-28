@@ -55,6 +55,6 @@ Do you use **Linux**?
 3. Double click `linux-pokemap.bash` to run the program
 4. Go to <https://localhost.daplie.com:3443>
 
-# Instructions for Technical People
+# Instructions for Teachers and Technical People
 
 See <https://github.com/Daplie/node-pokemap>
