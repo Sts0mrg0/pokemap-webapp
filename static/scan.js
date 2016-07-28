@@ -1,3 +1,4 @@
+(function (exports) {
 'use strict';
 
 // Ported from https://github.com/AHAAAAAAA/PokemonGo-Map/blob/master/pogom/search.py#L55
@@ -47,12 +48,15 @@ function generate_location_steps(initial_loc, step_count) {
 
     var steps = [];
 
-    steps.push([initial_loc[0], initial_loc[1], 0]);    // insert initial location
 
     var ring = 1;
     var loc = initial_loc;
+    var altitude = 0;
     var direction;
     var i;
+
+    steps.push([initial_loc[0], initial_loc[1], altitude]);    // insert initial location
+
     while (ring < step_count) {
         // Set loc to start at top left
         loc = get_new_coords(loc, ydist, NORTH);
@@ -83,9 +87,16 @@ function generate_location_steps(initial_loc, step_count) {
                     loc = get_new_coords(loc, xdist/2, EAST);
                     break;
                 }
-                steps.push([loc[0], loc[1], 0]);
+                steps.push([loc[0], loc[1], altitude]);
             }
         }
         ring += 1;
     }
+
+    return steps;
 }
+
+exports.getNewCoords = get_new_coords;
+exports.generateLocationSteps = generate_location_steps;
+
+}('undefined' === typeof window ? module.exports : window));
