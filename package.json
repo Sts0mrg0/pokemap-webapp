@@ -1,6 +1,6 @@
 {
   "name": "pokemap-web",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Pokemon Go Map - Live Visualization",
   "main": "Gruntfile.js",
   "devDependencies": {
