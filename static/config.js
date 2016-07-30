@@ -6,6 +6,12 @@ window.CONFIG = {
 , longitude: 0
 , gmaps_key: 'AIzaSyB0Dqa90ZCmlwh7oPHkgfr2-cMMkufLBQE'
 , requireLogin: true
+, heartbeatInterval: 2000 // in ms
+  // distance in meters to travel between heartbeats
+, pulseRadius: 70
+  // number of concentric rings to expand during search
+  // (keep this small - less than 10 - it gets really big really fast)
+, ringSteps: 8
 };
 
 // Auto-detect language to use

@@ -592,7 +592,11 @@ function updateLoc(lat, lng) {
       CONFIG.longitude = lng;
       CONFIG.scanIndex = 0;
       console.warn(CONFIG.latitude, CONFIG.longitude);
-      CONFIG.scan = window.generateLocationSteps([CONFIG.latitude, CONFIG.longitude], 8);
+      CONFIG.scan = window.generateLocationSteps(
+        [CONFIG.latitude, CONFIG.longitude]
+      , CONFIG.ringSteps
+      , CONFIG.pulseRadius
+      );
     }
   }
 

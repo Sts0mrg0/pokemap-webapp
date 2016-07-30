@@ -35,7 +35,7 @@ function get_new_coords(init_loc, distance, bearingDegs) {
     return [toDegrees(new_lat), toDegrees(new_lon)];
 }
 
-function generate_location_steps(initial_loc, step_count) {
+function generate_location_steps(initial_loc, step_count, pulse_radius) {
     if (!Array.isArray(initial_loc) && (2 === initial_loc.length || 3 === initial_loc.length)) {
       throw new Error("generate_location_steps([lat, lng], step_count)");
     }
@@ -45,7 +45,7 @@ function generate_location_steps(initial_loc, step_count) {
     var SOUTH = 180;
     var WEST = 270;
 
-    var pulse_radius = 0.1;                 // km - radius of players heartbeat is 100m
+    var pulse_radius = pulse_radius / 1000; // km - radius of players heartbeat is 100m
     var xdist = Math.sqrt(3)*pulse_radius;  // dist between column centers
     var ydist = 3*(pulse_radius/2);         // dist between row centers
 
