@@ -582,7 +582,7 @@ function heartbeat() {
 }
 function startHeartbeat() {
   window.clearInterval(CONFIG.heartbeatInterval);
-  CONFIG.heartbeatInterval = window.setInterval(heartbeat, 2000);
+  CONFIG.heartbeatInterval = window.setInterval(heartbeat, CONFIG.heartbeatInterval);
 }
 
 function updateLoc(lat, lng) {
