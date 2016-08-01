@@ -34,21 +34,21 @@ your account may be suspended.
 
 Do you use **Windows**?
 
-1. Go to <https://nodejs.org> and download and install node.js
+1. Go to <https://nodejs.org> and download and install node.js **v6.3.1** or higher **NOT v4**
 2. Download and open [pokemap.zip (v1.3.4)](https://github.com/Daplie/node-pokemap/files/394061/pokemap-2016-08-01.zip)
 3. Double click `windows-pokemap.bat` to run the program
 4. Go to <https://localhost.daplie.com:3443>
 
 Do you use **Mac**?
 
-1. Go to <https://nodejs.org> and download and install node.js (or run `curl -L bit.ly/nodejs-min | bash`)
+1. Go to <https://nodejs.org> and download and install node.js **v6.3.1** or higher **NOT v4** (or run `curl -L bit.ly/nodejs-min | bash`)
 2. Download and open [pokemap.zip (v1.3.4)](https://github.com/Daplie/node-pokemap/files/394061/pokemap-2016-08-01.zip)
 3. Double click `mac-pokemap.bash` to run the program
 4. Go to <https://localhost.daplie.com:3443>
 
 Do you use **Linux**?
 
-1. Install node.js
+1. Install node.js **v6.3.1** or higher **NOT v4**
   * Run this in Terminal: `curl -L bit.ly/nodejs-min | bash`
   * Or go to <https://nodejs.org> and figure it out the hard way.
 2. Download and open [pokemap.zip (v1.3.4)](https://github.com/Daplie/node-pokemap/files/394061/pokemap-2016-08-01.zip)
