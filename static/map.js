@@ -441,13 +441,13 @@ POKEMAP.create = function (opts) {
     });
   }
 
-  function updateMap(result) {
+  function updateMap(_result) {
     if (!_isReady(true)) {
       return;
     }
 
-    if (result) {
-      STATE.result = result;
+    if (_result) {
+      STATE.result = _result;
     }
 
     if (!STATE.result) {
@@ -455,7 +455,7 @@ POKEMAP.create = function (opts) {
       return;
     }
 
-    $.each(result.pokemons, function(i, item){
+    $.each(STATE.result.pokemons, function(i, item){
       if (!STATE.cfg.showPokemon) {
           return false; // in case the checkbox was unchecked in the meantime.
       }
@@ -468,7 +468,7 @@ POKEMAP.create = function (opts) {
       }
     });
 
-    $.each(result.pokestops, function(i, item) {
+    $.each(STATE.result.pokestops, function(i, item) {
         if (!STATE.cfg.showPokestops) {
             return false;
         } else if (!(item.pokestop_id in map_pokestops)) { // add marker to map and item to dict
@@ -480,7 +480,7 @@ POKEMAP.create = function (opts) {
 
     });
 
-    $.each(result.gyms, function(i, item){
+    $.each(STATE.result.gyms, function(i, item){
         if (!STATE.cfg.showGyms) {
             return false; // in case the checkbox was unchecked in the meantime.
         }
@@ -504,7 +504,7 @@ POKEMAP.create = function (opts) {
 
     });
 
-    $.each(result.scanned, function(i, item) {
+    $.each(STATE.result.scanned, function(i, item) {
         if (!STATE.cfg.showScanned) {
             return false;
         }

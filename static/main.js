@@ -196,7 +196,7 @@ $(function () {
     localStorage.remember_select_notify = JSON.stringify(pokemapOpts.notifiedPokemon);
   });
 
-  $('gyms-switch').change(function() {
+  $('#gyms-switch').change(function() {
     updateConfig("showGyms", this.checked);
 
     if (this.checked) {
@@ -235,10 +235,6 @@ $(function () {
     });
   });
 
-  $('#sound-switch').change(function() {
-    updateConfig("playSound", this.checked);
-  });
-
   $('#scanned-switch').change(function() {
     updateConfig("showScanned", this.checked);
 
@@ -252,6 +248,10 @@ $(function () {
     });
   });
 
+  $('#sound-switch').change(function() {
+    updateConfig("playSound", this.checked);
+  });
+
   $('body').on('click', '.js-geolocation', function (ev) {
     ev.preventDefault();
     ev.stopPropagation();
@@ -263,11 +263,11 @@ $(function () {
     ev.preventDefault();
     ev.stopPropagation();
 
-    var geocoder = new google.maps.Geocoder();
+    var geocoder = new window.google.maps.Geocoder();
     var address = $('.js-location').val();
 
     geocoder.geocode({ 'address': address }, function (results, status) {
-      if (status !== google.maps.GeocoderStatus.OK) {
+      if (status !== window.google.maps.GeocoderStatus.OK) {
         window.alert('Geocode was not successful for the following reason: ' + status);
       }
 
