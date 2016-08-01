@@ -239,37 +239,17 @@ POKEMAP.create = function (opts) {
       return marker;
   }
 
-  function getColorByDate(value){
-      //Changes the Color from Red to green over 15 mins
-      var diff = (Date.now() - value) / 1000 / 60 / 15;
+  function getColorByDate(value) {
+    //Changes the color from red to green over 15 mins
+    var diff = (Date.now() - value) / 1000 / 60 / 15;
 
-      if(diff > 1){
-          diff = 1;
-      }
+    if (diff > 1) {
+      diff = 1;
+    }
 
-      //value from 0 to 1 - Green to Red
-      var hue=((1-diff)*120).toString(10);
-      return ["hsl(",hue,",100%,50%)"].join("");
-  }
-
-  function setupScannedMarker(item) {
-      var circleCenter = new google.maps.LatLng(item.latitude, item.longitude);
-
-      var marker = new google.maps.Circle({
-          map: STATE.map,
-          center: circleCenter,
-          radius: 100,    // 10 miles in metres
-          fillColor: getColorByDate(item.last_modified),
-          strokeWeight: 1
-      });
-
-      // marker.infoWindow = new google.maps.InfoWindow({
-      //     content: scannedLabel(item.last_modified),
-      //     position: circleCenter
-      // });
-
-      //addListeners(marker);
-      return marker;
+    //value from 0 to 1 - Green to Red
+    var hue = ((1 - diff) * 120).toString(10);
+    return ["hsl(", hue, ",100%,50%)"].join("");
   }
 
   function addListeners(marker) {
@@ -310,6 +290,7 @@ POKEMAP.create = function (opts) {
           //If older than 15mins remove
           if (map_scanned[key].last_modified < (new Date().getTime() - 15 * 60 * 1000)) {
               map_scanned[key].marker.setMap(null);
+              //console.log('delete scanned');
               delete map_scanned[key];
           }
       });
@@ -441,6 +422,92 @@ POKEMAP.create = function (opts) {
     });
   }
 
+  function processGyms(item){
+    if (!STATE.cfg.showGyms) {
+        return false; // in case the checkbox was unchecked in the meantime.
+    }
+
+    if (item.gym_id in map_gyms) {
+        // if team has changed, create new marker (new icon)
+        if (map_gyms[item.gym_id].team_id !== item.team_id) {
+            map_gyms[item.gym_id].marker.setMap(null);
+            map_gyms[item.gym_id].marker = setupGymMarker(item);
+        } else { // if it hasn't changed generate new label only (in case prestige has changed)
+            map_gyms[item.gym_id].marker.infoWindow = new google.maps.InfoWindow({
+                content: gymLabel(gym_types[item.team_id], item.team_id, item.gym_points)
+            });
+        }
+    }
+    else { // add marker to map and item to dict
+        if (item.marker) { item.marker.setMap(null); }
+        item.marker = setupGymMarker(item);
+        map_gyms[item.gym_id] = item;
+    }
+
+  }
+
+  function setupScannedMarker(item) {
+    //console.log('setupScannedMarker');
+    //console.log(item);
+    var circleCenter = new google.maps.LatLng(item.latitude, item.longitude);
+
+    var opts = {
+      map: STATE.map,
+      center: circleCenter,
+      radius: 100, // 10 miles in metres
+      fillColor: getColorByDate(item.last_modified),
+      strokeWeight: 1
+    };
+    //console.log(opts);
+    var marker = new google.maps.Circle(opts);
+
+    return marker;
+  }
+
+  function processScanned(item) {
+    if (!STATE.cfg.showScanned) {
+      //console.log('ignore scanned');
+      return false;
+    }
+
+    if (item.scanned_id in map_scanned) {
+      //console.log('update old scanned');
+      map_scanned[item.scanned_id].marker.setOptions({
+        fillColor: getColorByDate(item.last_modified)
+      });
+    } else { // add marker to map and item to dict
+      //console.log('create new scanned');
+      if (item.marker) { item.marker.setMap(null); }
+      item.marker = setupScannedMarker(item);
+      map_scanned[item.scanned_id] = item;
+    }
+  }
+
+  function processPokestops(item) {
+    if (!STATE.cfg.showPokestops) {
+      return false;
+    } else if (!(item.pokestop_id in map_pokestops)) { // add marker to map and item to dict
+      // add marker to map and item to dict
+      if (item.marker) { item.marker.setMap(null); }
+      item.marker = setupPokestopMarker(item);
+      map_pokestops[item.pokestop_id] = item;
+    }
+
+  }
+
+  function processPokemon(item) {
+    if (!STATE.cfg.showPokemon) {
+      return false; // in case the checkbox was unchecked in the meantime.
+    }
+    if (!(item.encounter_id in map_pokemons) &&
+            opts.excludedPokemon.indexOf(item.pokemon_id) < 0) {
+      // add marker to map and item to dict
+      if (item.marker) { item.marker.setMap(null); }
+      item.marker = setupPokemonMarker(item);
+      map_pokemons[item.encounter_id] = item;
+    }
+  }
+
   function updateMap(_result) {
     if (!_isReady(true)) {
       return;
@@ -455,70 +522,10 @@ POKEMAP.create = function (opts) {
       return;
     }
 
-    $.each(STATE.result.pokemons, function(i, item){
-      if (!STATE.cfg.showPokemon) {
-          return false; // in case the checkbox was unchecked in the meantime.
-      }
-      if (!(item.encounter_id in map_pokemons) &&
-                opts.excludedPokemon.indexOf(item.pokemon_id) < 0) {
-          // add marker to map and item to dict
-          if (item.marker) { item.marker.setMap(null); }
-          item.marker = setupPokemonMarker(item);
-          map_pokemons[item.encounter_id] = item;
-      }
-    });
-
-    $.each(STATE.result.pokestops, function(i, item) {
-        if (!STATE.cfg.showPokestops) {
-            return false;
-        } else if (!(item.pokestop_id in map_pokestops)) { // add marker to map and item to dict
-            // add marker to map and item to dict
-            if (item.marker) { item.marker.setMap(null); }
-            item.marker = setupPokestopMarker(item);
-            map_pokestops[item.pokestop_id] = item;
-        }
-
-    });
-
-    $.each(STATE.result.gyms, function(i, item){
-        if (!STATE.cfg.showGyms) {
-            return false; // in case the checkbox was unchecked in the meantime.
-        }
-
-        if (item.gym_id in map_gyms) {
-            // if team has changed, create new marker (new icon)
-            if (map_gyms[item.gym_id].team_id !== item.team_id) {
-                map_gyms[item.gym_id].marker.setMap(null);
-                map_gyms[item.gym_id].marker = setupGymMarker(item);
-            } else { // if it hasn't changed generate new label only (in case prestige has changed)
-                map_gyms[item.gym_id].marker.infoWindow = new google.maps.InfoWindow({
-                    content: gymLabel(gym_types[item.team_id], item.team_id, item.gym_points)
-                });
-            }
-        }
-        else { // add marker to map and item to dict
-            if (item.marker) { item.marker.setMap(null); }
-            item.marker = setupGymMarker(item);
-            map_gyms[item.gym_id] = item;
-        }
-
-    });
-
-    $.each(STATE.result.scanned, function(i, item) {
-        if (!STATE.cfg.showScanned) {
-            return false;
-        }
-
-        if (item.scanned_id in map_scanned) {
-            map_scanned[item.scanned_id].marker.setOptions({fillColor: getColorByDate(item.last_modified)});
-        }
-        else { // add marker to map and item to dict
-            if (item.marker) { item.marker.setMap(null); }
-            item.marker = setupScannedMarker(item);
-            map_scanned[item.scanned_id] = item;
-        }
-
-    });
+    STATE.result.pokemons.forEach(processPokemon);
+    STATE.result.pokestops.forEach(processPokestops);
+    STATE.result.gyms.forEach(processGyms);
+    STATE.result.scanned.forEach(processScanned);
 
     clearStaleMarkers();
   }

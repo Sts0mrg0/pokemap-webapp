@@ -175,6 +175,11 @@ function onHeartbeat(err, data) {
   return pokemap.setData(data);
 }
 
+function cancelGeoWatch() {
+  navigator.geolocation.clearWatch(CONFIG.watchGeo);
+  CONFIG.watchGeo = null;
+}
+
 $(function () {
   if (!Notification) {
       console.warning('could not load notifications');
@@ -239,11 +244,13 @@ $(function () {
     updateConfig("showScanned", this.checked);
 
     if (this.checked) {
+      // TODO repopulate from non-shown
       return;
     }
 
     Object.keys(pokemap.scanned).forEach(function (key) {
       pokemap.scanned[key].marker.setMap(null);
+      // TODO don't delete
       delete pokemap.scanned[key];
     });
   });
@@ -263,8 +270,11 @@ $(function () {
     ev.preventDefault();
     ev.stopPropagation();
 
+    cancelGeoWatch();
+
     var geocoder = new window.google.maps.Geocoder();
     var address = $('.js-location').val();
+
 
     geocoder.geocode({ 'address': address }, function (results, status) {
       if (status !== window.google.maps.GeocoderStatus.OK) {

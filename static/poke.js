@@ -36,8 +36,14 @@ POKE.login = function (deps, creds, cb) {
   });
 };
 
+// TODO
+// wait for one heartbeat to complete (or 10s timeout) before issuing the next?
 POKE.heartbeat = function (deps, sess, cb) {
-  if (!sess.latitude || !sess.longitude) {
+  // preserve from async changes to sess.latitude, etc
+  var lat = sess.latitude;
+  var lng = sess.longitude;
+
+  if (!lat || !lng) {
     console.log('heartbeat ignored - waiting for lat/lng update');
     return;
   }
@@ -45,9 +51,10 @@ POKE.heartbeat = function (deps, sess, cb) {
   deps.request({
       url: deps.heartbeatUrl || POKE.DEFAULT_HEARTBEAT_URL
     , method: 'GET'
+      // TODO make explicit querystring
     , data: {
-        'latitude': sess.latitude
-      , 'longitude': sess.longitude
+        'latitude': lat
+      , 'longitude': lng
       , 'pokemon': sess.showPokemon
       , 'pokestops': sess.showPokestops
       , 'gyms': sess.showGyms
@@ -59,6 +66,14 @@ POKE.heartbeat = function (deps, sess, cb) {
       }
     , dataType: "json"
   }).done(function(result) {
+    if (result && result.pokemons) {
+        result.scanned = result.scanned || [{
+          scanned_id: lat + ',' + lng
+        , latitude: lat
+        , longitde: lng
+        , last_modified: Date.now() // Math.round(Date.now() / 1000)
+        }];
+    }
     cb(null, result);
   });
 };
