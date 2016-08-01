@@ -2,7 +2,19 @@
 'use strict';
 
 var CONFIG = window.CONFIG;
+var POKE = window.POKE;
+var poke = POKE.create({
+  request: $.ajax
+, heartbeatInterval: CONFIG.heartbeatInterval
+});
 var google = null;
+var sess = {};
+var excludedPokemon = [];
+var notifiedPokemon = [];
+var idToPokemon = {};
+var $selectExclude;
+var $selectNotify;
+var map;
 
 document.addEventListener("DOMContentLoaded", function () {
     if (!Notification) {
@@ -15,54 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-var $selectExclude = $("#exclude-pokemon");
-var $selectNotify = $("#notify-pokemon");
-
-var idToPokemon = {};
-
-$.getJSON("static/locales/pokemon." + document.documentElement.lang + ".json").done(function(data) {
-    var pokeList = [];
-
-    $.each(data, function(key, value) {
-        pokeList.push( { id: key, text: value } );
-        idToPokemon[key] = value;
-    });
-
-    // setup the filter lists
-    $selectExclude.select2({
-        placeholder: "Select Pokémon",
-        data: pokeList
-    });
-    $selectNotify.select2({
-        placeholder: "Select Pokémon",
-        data: pokeList
-    });
-
-    // recall saved lists
-    if (localStorage.getItem('remember_select_exclude')) {
-        $selectExclude.val(JSON.parse(localStorage.remember_select_exclude)).trigger("change");
-    }
-    if (localStorage.getItem('remember_select_notify')) {
-        $selectNotify.val(JSON.parse(localStorage.remember_select_notify)).trigger("change");
-    }
-});
-
-var excludedPokemon = [];
-var notifiedPokemon = [];
-
-$selectExclude.on("change", function (/*e*/) {
-    excludedPokemon = $selectExclude.val().map(Number);
-    clearStaleMarkers();
-    localStorage.remember_select_exclude = JSON.stringify(excludedPokemon);
-});
-
-$selectNotify.on("change", function (/*e*/) {
-    notifiedPokemon = $selectNotify.val().map(Number);
-    localStorage.remember_select_notify = JSON.stringify(notifiedPokemon);
-});
-
-var map;
-
+// TODO can we get rid of this?
 var light2Style=[{"elementType":"geometry","stylers":[{"hue":"#ff4400"},{"saturation":-68},{"lightness":-4},{"gamma":0.72}]},{"featureType":"road","elementType":"labels.icon"},{"featureType":"landscape.man_made","elementType":"geometry","stylers":[{"hue":"#0077ff"},{"gamma":3.1}]},{"featureType":"water","stylers":[{"hue":"#00ccff"},{"gamma":0.44},{"saturation":-33}]},{"featureType":"poi.park","stylers":[{"hue":"#44ff00"},{"saturation":-23}]},{"featureType":"water","elementType":"labels.text.fill","stylers":[{"hue":"#007fff"},{"gamma":0.77},{"saturation":65},{"lightness":99}]},{"featureType":"water","elementType":"labels.text.stroke","stylers":[{"gamma":0.11},{"weight":5.6},{"saturation":99},{"hue":"#0091ff"},{"lightness":-86}]},{"featureType":"transit.line","elementType":"geometry","stylers":[{"lightness":-48},{"hue":"#ff5e00"},{"gamma":1.2},{"saturation":-23}]},{"featureType":"transit","elementType":"labels.text.stroke","stylers":[{"saturation":-64},{"hue":"#ff9100"},{"lightness":16},{"gamma":0.47},{"weight":2.7}]}];
 var darkStyle=[{"featureType":"all","elementType":"labels.text.fill","stylers":[{"saturation":36},{"color":"#b39964"},{"lightness":40}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"visibility":"on"},{"color":"#000000"},{"lightness":16}]},{"featureType":"all","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"administrative","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":17},{"weight":1.2}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#181818"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"lightness":17},{"color":"#525252"}]}];
 var pGoStyle=[{"featureType":"landscape.man_made","elementType":"geometry.fill","stylers":[{"color":"#a1f199"}]},{"featureType":"landscape.natural.landcover","elementType":"geometry.fill","stylers":[{"color":"#37bda2"}]},{"featureType":"landscape.natural.terrain","elementType":"geometry.fill","stylers":[{"color":"#37bda2"}]},{"featureType":"poi.attraction","elementType":"geometry.fill","stylers":[{"visibility":"on"}]},{"featureType":"poi.business","elementType":"geometry.fill","stylers":[{"color":"#e4dfd9"}]},{"featureType":"poi.business","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi.park","elementType":"geometry.fill","stylers":[{"color":"#37bda2"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#84b09e"}]},{"featureType":"road","elementType":"geometry.stroke","stylers":[{"color":"#fafeb8"},{"weight":"1.25"}]},{"featureType":"road.highway","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"water","elementType":"geometry.fill","stylers":[{"color":"#5ddad6"}]}];
@@ -149,7 +114,7 @@ function initMapHelper(center_lat, center_lng, cb) {
       var lat = event.latLng.lat();
       var lng = event.latLng.lng();
 
-      CONFIG.marker.setPosition(new google.maps.LatLng(CONFIG.latitude, CONFIG.longitude));
+      CONFIG.marker.setPosition(new google.maps.LatLng(sess.latitude, sess.longitude));
 
       updateLoc(lat, lng);
     });
@@ -165,11 +130,9 @@ function initMap() {
   google = window.google;
 
   // NOTE: used by Google Maps and on document load
-  if (CONFIG.requireLogin && !CONFIG.accessToken) {
+  if (CONFIG.requireLogin && !sess.accessToken) {
     return;
   }
-
-  updateMap();
 
   // wait for user to click to update
   /*
@@ -205,8 +168,9 @@ function initSidebar() {
     });
 }
 
-var pad = function (number) { return number <= 99 ? ("0" + number).slice(-2) : number; };
-
+function pad(number) {
+  return number <= 99 ? ("0" + number).slice(-2) : number;
+}
 
 function pokemonLabel(name, disappear_time, id, latitude, longitude) {
     var disappear_date = new Date(disappear_time);
@@ -460,17 +424,17 @@ function clearStaleMarkers() {
     });
 }
 
-function updateMap() {
-  if (!CONFIG.pokemap) {
+function updateMap(data) {
+  var result = (data || CONFIG.pokemap);
+
+  if (!result) {
     console.log('updateMap ignored - waiting for first heartbeat');
     return;
   }
 
-  initMapHelper(CONFIG.latitude, CONFIG.longitude, function () {
+  initMapHelper(sess.latitude, sess.longitude, function () {
 
-  var result = CONFIG.pokemap;
-
-  CONFIG.marker.setPosition(new google.maps.LatLng(CONFIG.latitude, CONFIG.longitude));
+  CONFIG.marker.setPosition(new google.maps.LatLng(sess.latitude, sess.longitude));
 
   $.each(result.pokemons, function(i, item){
     if (!localStorage.showPokemon) {
@@ -540,67 +504,6 @@ function updateMap() {
   clearStaleMarkers();
 
   });
-}
-
-function heartbeat() {
-  if (!CONFIG.latitude || !CONFIG.longitude) {
-    console.log('heartbeat ignored - waiting for lat/lng update');
-    return;
-  }
-
-  CONFIG.latitude = CONFIG.scan[CONFIG.scanIndex][0];
-  CONFIG.longitude = CONFIG.scan[CONFIG.scanIndex][1];
-  CONFIG.scanIndex += 1;
-  if (CONFIG.scanIndex >= CONFIG.scan.length) {
-    CONFIG.scanIndex = 0;
-  }
-
-  localStorage.showPokemon = localStorage.showPokemon || true;
-  localStorage.showGyms = localStorage.showGyms || true;
-  localStorage.showPokestops = localStorage.showPokestops || false;
-  localStorage.showScanned = localStorage.showScanned || false;
-
-  $.ajax({
-      url: "raw_data",
-      method: 'GET',
-      data: {
-          'latitude': CONFIG.latitude,
-          'longitude': CONFIG.longitude,
-          'pokemon': localStorage.showPokemon,
-          'pokestops': localStorage.showPokestops,
-          'gyms': localStorage.showGyms,
-          'scanned': localStorage.showScanned
-      },
-      headers: {
-        'Authorization': 'Bearer ' + CONFIG.accessToken
-      },
-      dataType: "json"
-  }).done(function(result) {
-    CONFIG.pokemap = result;
-    return updateMap();
-  });
-}
-function startHeartbeat() {
-  window.clearInterval(CONFIG.heartbeatInterval);
-  CONFIG.heartbeatInterval = window.setInterval(heartbeat, CONFIG.heartbeatInterval);
-}
-
-function updateLoc(lat, lng) {
-  if (lat && lng && 'number' === typeof lat && 'number' === typeof lng) {
-    if (!CONFIG.scan || lat !== CONFIG.latitude || lng !== CONFIG.longitude) {
-      CONFIG.latitude = lat;
-      CONFIG.longitude = lng;
-      CONFIG.scanIndex = 0;
-      console.warn(CONFIG.latitude, CONFIG.longitude);
-      CONFIG.scan = window.generateLocationSteps(
-        [CONFIG.latitude, CONFIG.longitude]
-      , CONFIG.ringSteps
-      , CONFIG.pulseRadius
-      );
-    }
-  }
-
-  return updateMap();
 }
 
 document.getElementById('gyms-switch').onclick = function() {
@@ -683,8 +586,6 @@ var updateLabelDiffTime = function() {
     });
 };
 
-window.setInterval(updateLabelDiffTime, 1000);
-
 function sendNotification(title, text, icon) {
     if (Notification.permission !== "granted") {
         Notification.requestPermission();
@@ -702,11 +603,19 @@ function sendNotification(title, text, icon) {
 }
 
 function logout() {
-  CONFIG.accessToken = null;
+  poke.stopHeartbeat(sess);
+  sess.accessToken = null;
+  sess.username = null;
+  sess.password = null;
   localStorage.removeItem('accessToken');
+  localStorage.removeItem('username');
+  localStorage.removeItem('password');
+  localStorage.removeItem('provider');
+  localStorage.clear();
   //clearInterval(CONFIG.updateMapInterval);
   $('.js-map').hide();
   //$('.js-geolocation').hide();
+  $('.js-logout-container').hide();
   $('.js-login-container').show();
   $('.js-geolocation-container').hide();
 }
@@ -723,7 +632,7 @@ function updateGeolocation() {
     }
 
     initMapHelper(position.coords.latitude, position.coords.longitude, function () {
-      CONFIG.marker.setPosition(new google.maps.LatLng(CONFIG.latitude, CONFIG.longitude));
+      CONFIG.marker.setPosition(new google.maps.LatLng(sess.latitude, sess.longitude));
       // http://stackoverflow.com/questions/10917648/google-maps-api-v3-recenter-the-map-to-a-marker
       map.setCenter(CONFIG.marker.getPosition());
       updateLoc(position.coords.latitude, position.coords.longitude);
@@ -747,12 +656,92 @@ function updateGeolocation() {
   }
 }
 
+function updateLoc(lat, lng) {
+  if (lat && lng && 'number' === typeof lat && 'number' === typeof lng) {
+    if (!sess.scan || lat !== sess.latitude || lng !== sess.longitude) {
+      poke.setLocation(sess, lat, lng);
+      sess.scanIndex = 0;
+      sess.scan = window.generateLocationSteps(
+        [sess.latitude, sess.longitude]
+      , sess.ringSteps
+      , sess.pulseRadius
+      );
+    }
+  }
+}
+
+function beforeHeartbeat() {
+  if (!sess.scan) {
+    // can't update scan location if it isn't set
+    return;
+  }
+
+  sess.latitude = sess.scan[sess.scanIndex][0];
+  sess.longitude = sess.scan[sess.scanIndex][1];
+  sess.scanIndex += 1;
+  if (sess.scanIndex >= sess.scan.length) {
+    sess.scanIndex = 0;
+  }
+}
+
+function onHeartbeat(err, data) {
+  if (err) {
+    console.error('onHeartbeat:');
+    console.error(err);
+    $('.js-alert-message').val("heartbeat failure");
+    return;
+  }
+
+  return updateMap(data);
+}
+
 $(function () {
+  // TODO use .js-* classes on body, not ids directly on element
+  $selectExclude = $("#exclude-pokemon");
+  $selectNotify = $("#notify-pokemon");
   // default state, show nothing
   $('.js-login-container').hide();
   $('.js-geolocation-container').hide();
   $('.js-map').hide();
 //  $('.js-geolocation').hide();
+
+  $.getJSON("static/locales/pokemon." + document.documentElement.lang + ".json").done(function(data) {
+    var pokeList = [];
+
+    $.each(data, function(key, value) {
+        pokeList.push( { id: key, text: value } );
+        idToPokemon[key] = value;
+    });
+
+    // setup the filter lists
+    $selectExclude.select2({
+        placeholder: "Select Pokémon",
+        data: pokeList
+    });
+    $selectNotify.select2({
+        placeholder: "Select Pokémon",
+        data: pokeList
+    });
+
+    // recall saved lists
+    if (localStorage.getItem('remember_select_exclude')) {
+        $selectExclude.val(JSON.parse(localStorage.remember_select_exclude)).trigger("change");
+    }
+    if (localStorage.getItem('remember_select_notify')) {
+        $selectNotify.val(JSON.parse(localStorage.remember_select_notify)).trigger("change");
+    }
+  });
+
+  $selectExclude.on("change", function (/*e*/) {
+      excludedPokemon = $selectExclude.val().map(Number);
+      clearStaleMarkers();
+      localStorage.remember_select_exclude = JSON.stringify(excludedPokemon);
+  });
+
+  $selectNotify.on("change", function (/*e*/) {
+      notifiedPokemon = $selectNotify.val().map(Number);
+      localStorage.remember_select_notify = JSON.stringify(notifiedPokemon);
+  });
 
   $('body').on('click', '.js-geolocation', function (ev) {
     ev.preventDefault();
@@ -773,11 +762,11 @@ $(function () {
         window.alert('Geocode was not successful for the following reason: ' + status);
       }
 
-      updateLoc(results[0].geometry.location.lat(), results[0].geometry.location.lng());
+      poke.setLocation(sess, results[0].geometry.location.lat(), results[0].geometry.location.lng());
     });
   });
 
-  $('body').on('click', 'js-logout', function (ev) {
+  $('body').on('click', '.js-logout', function (ev) {
     ev.preventDefault();
     ev.stopPropagation();
 
@@ -788,61 +777,62 @@ $(function () {
     ev.preventDefault();
     ev.stopPropagation();
 
-    startHeartbeat();
+    poke.login({
+      username: $('.js-login-container .js-username').val() || 'demo'
+    , password: $('.js-login-container .js-password').val() || 'demo'
+    , provider: $('.js-login-container .js-provider').val() || 'ptc'
+    }, function (err, _sess) {
+      if (err) {
+        // TODO show 'bad credentials'
+        $('.js-login-container .js-password').val('');
+        $('.js-login-container .js-message').val(err.message || err.toString());
+        return;
+      }
 
-    $.ajax({
-        url: "/api/com.pokemon.go/login",
-        method: 'POST',
-        data: JSON.stringify({
-          username: $('.js-login-container .js-username').val()
-        , password: $('.js-login-container .js-password').val()
-        , provider: $('.js-login-container .js-provider').val() || 'ptc'
-        }),
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8'
-        },
-        dataType: "json"
-    }).then(function (result) {
-        console.log('DEBUG Login Result:');
-        console.log(result);
+      // accessToken, username, password, provider
+      Object.keys(sess).forEach(function (key) {
+        sess[key] = _sess[key];
+      });
 
-        result.accessToken = result.accessToken || result.access_token;
+      localStorage.setItem('accessToken', sess.accessToken);
+      $('.js-login-container').hide();
 
-        if (!result.accessToken) {
-          // TODO show 'bad credentials'
-          $('.js-login-container .js-password').val('');
-          return;
-        }
+      // You can try using the default key... but it won't work for you, or not for long
+      if ('AIzaSyB0Dqa90ZCmlwh7oPHkgfr2-cMMkufLBQE' !== CONFIG.gmaps_key) {
+        $('.js-google-maps-key').hide();
+      }
 
-        CONFIG.accessToken = result.accessToken;
-        localStorage.setItem('accessToken', result.accessToken);
+      if (localStorage.geoIsAllowed) {
+        $('.js-geolocation-container').hide();
+        updateGeolocation();
+      } else {
+        $('.js-geolocation-container').show();
+      }
 
-        // You can try using the default key... but it won't work for you, or not for long
-        if ('AIzaSyB0Dqa90ZCmlwh7oPHkgfr2-cMMkufLBQE' !== CONFIG.gmaps_key) {
-          $('.js-google-maps-key').hide();
-        }
-
-        $('.js-login-container').hide();
-
-        // TODO
-        if (localStorage.geoIsAllowed) {
-          $('.js-geolocation-container').hide();
-          updateGeolocation();
-        } else {
-          $('.js-geolocation-container').show();
-        }
+      poke.startHeartbeat(sess, beforeHeartbeat, onHeartbeat);
     });
   });
 
+  sess.accessToken = localStorage.getItem('accessToken') || CONFIG.latitude;
+  sess.latitude = localStorage.getItem('latitude') || CONFIG.latitude;
+  sess.longitude = localStorage.getItem('longitude') || CONFIG.longitude;
+  sess.showPokemon = localStorage.getItem('showPokemon') || true;
+  sess.showGyms = localStorage.getItem('showGyms') || true;
+  sess.showPokestops = localStorage.getItem('showPokestops') || false;
+  sess.showScanned = localStorage.getItem('showScanned') || false;
+
+  window.setInterval(updateLabelDiffTime, 1000);
+
   $('.js-map').hide();
-  if (CONFIG.requireLogin && !CONFIG.accessToken) {
+  if (CONFIG.requireLogin && !sess.accessToken) {
     $('.js-login-container').show();
     return;
   }
   else {
-    startHeartbeat();
+    poke.startHeartbeat(sess, beforeHeartbeat, onHeartbeat);
     // this init is also called by Google Maps load
     $('.js-geolocation-container').show();
+    $('.js-logout-container').show();
   }
 
 });
