@@ -61,6 +61,8 @@ See <https://github.com/Daplie/node-pokemap>
 
 # Problems?
 
+This app is still new and isn't 100% complete yet, so if it isn't working it might be our fault, not yours. Let us know and we'll sort it out.
+
 Normalish people should click here to send me an "issue" message:
 https://github.com/Daplie/pokemap-webapp/issues
 
