@@ -58,3 +58,11 @@ Do you use **Linux**?
 # Instructions for Teachers and Technical People
 
 See <https://github.com/Daplie/node-pokemap>
+
+# Problems?
+
+Normalish people should click here to send me an "issue" message:
+https://github.com/Daplie/pokemap-webapp/issues
+
+More technical people know what to do, but please do it here:
+https://github.com/Daplie/node-pokemap/issues
