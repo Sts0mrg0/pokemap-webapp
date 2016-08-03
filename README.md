@@ -34,27 +34,37 @@ your account may be suspended.
 
 Do you use **Windows**?
 
-1. Go to <https://nodejs.org> and download and install node.js
-2. Download and open [pokemap.zip (v1.2.3)](https://github.com/Daplie/node-pokemap/files/390872/pokemap-2016-07-29.zip)
+1. Go to <https://nodejs.org> and download and install node.js **v6.3.1** or higher **NOT v4**
+2. Download and open [pokemap.zip (v1.3.5)](https://github.com/Daplie/node-pokemap/files/399927/pokemap-2016-08-03.zip)
 3. Double click `windows-pokemap.bat` to run the program
 4. Go to <https://localhost.daplie.com:3443>
 
 Do you use **Mac**?
 
-1. Go to <https://nodejs.org> and download and install node.js (or run `curl -L bit.ly/nodejs-min | bash`)
-2. Download and open [pokemap.zip (v1.2.3)](https://github.com/Daplie/node-pokemap/files/390872/pokemap-2016-07-29.zip)
-3. Double click `mac-pokemap.bash` to run the program
+1. Go to <https://nodejs.org> and download and install node.js **v6.3.1** or higher **NOT v4** (or run `curl -L bit.ly/nodejs-min | bash`)
+2. Download and open [pokemap.zip (v1.3.5)](https://github.com/Daplie/node-pokemap/files/399927/pokemap-2016-08-03.zip)
+3. Double click `mac-pokemap.command` to run the program
 4. Go to <https://localhost.daplie.com:3443>
 
 Do you use **Linux**?
 
-1. Install node.js
+1. Install node.js **v6.3.1** or higher **NOT v4**
   * Run this in Terminal: `curl -L bit.ly/nodejs-min | bash`
   * Or go to <https://nodejs.org> and figure it out the hard way.
-2. Download and open [pokemap.zip (v1.2.3)](https://github.com/Daplie/node-pokemap/files/390872/pokemap-2016-07-29.zip)
-3. Double click `linux-pokemap.bash` to run the program
+2. Download and open [pokemap.zip (v1.3.5)](https://github.com/Daplie/node-pokemap/files/399927/pokemap-2016-08-03.zip)
+3. Double click `linux-pokemap.desktop` to run the program (or run `linux-pokemap.bash` in Terminal)
 4. Go to <https://localhost.daplie.com:3443>
 
 # Instructions for Teachers and Technical People
 
 See <https://github.com/Daplie/node-pokemap>
+
+# Problems?
+
+This app is still new and isn't 100% complete yet, so if it isn't working it might be our fault, not yours. Let us know and we'll sort it out.
+
+Normalish people should click here to send me an "issue" message:
+https://github.com/Daplie/pokemap-webapp/issues
+
+More technical people know what to do, but please do it here:
+https://github.com/Daplie/node-pokemap/issues
