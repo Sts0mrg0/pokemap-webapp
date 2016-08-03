@@ -34,9 +34,9 @@ function initMap() {
 }
 
 function initSidebar(google) {
-    $('#gyms-switch').prop('checked', localStorage.getItem("showGyms") === 'true');
-    $('#pokemon-switch').prop('checked', localStorage.getItem("showPokemon") === 'true');
-    $('#pokestops-switch').prop('checked', localStorage.getItem("showPokestops") === 'true');
+    $('#gyms-switch').prop('checked', localStorage.getItem("showGyms") !== 'false');
+    $('#pokemon-switch').prop('checked', localStorage.getItem("showPokemon") !== 'false');
+    $('#pokestops-switch').prop('checked', localStorage.getItem("showPokestops") !== 'false');
     $('#scanned-switch').prop('checked', localStorage.getItem("showScanned") === 'true');
     $('#sound-switch').prop('checked', localStorage.getItem("playSound") === 'true');
 

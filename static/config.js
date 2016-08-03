@@ -6,9 +6,9 @@ window.CONFIG = {
 , longitude: 0
 , gmaps_key: 'AIzaSyB0Dqa90ZCmlwh7oPHkgfr2-cMMkufLBQE'
 , requireLogin: true
-, heartbeatInterval: 1000 // in ms
+, heartbeatInterval: 5000 // in ms
   // distance in meters to travel between heartbeats
-, pulseRadius: 70
+, pulseRadius: 25
   // number of concentric rings to expand during search
   // (keep this small - less than 10 - it gets really big really fast)
 , ringSteps: 8
