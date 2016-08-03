@@ -11,7 +11,7 @@ Key Features
 * **Multiple people** can login at the same time
 * **Fast** (doesn't slow down as you use it longer)
 
-![Map](https://i.imgur.com/ZjB9lo0.jpg)
+![Map](http://i.imgur.com/oWHaC8K.png)
 
 ## Warnings
 
