@@ -43,7 +43,8 @@ Do you use **Mac**?
 
 1. Go to <https://nodejs.org> and download and install node.js **v6.3.1** or higher **NOT v4** (or run `curl -L bit.ly/nodejs-min | bash`)
 2. Download and open [pokemap.zip (v1.3.5)](https://github.com/Daplie/node-pokemap/files/399927/pokemap-2016-08-03.zip)
-3. Double click `mac-pokemap.command` to run the program
+3. Right-click `mac-pokemap.command` and select "Open"
+4. Click "open" in the box that comes up asking if you want to open or cancel
 4. Go to <https://localhost.daplie.com:3443>
 
 Do you use **Linux**?
