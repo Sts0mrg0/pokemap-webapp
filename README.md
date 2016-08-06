@@ -32,7 +32,7 @@ your account may be suspended.
 
 ## Windows, Mac, or Linux?
 
-Do you use **Windows**?
+### Do you use **Windows**?
 
 1. Go to <https://nodejs.org> and download and install node.js **v6.3.1** or higher **NOT v4**
 2. Download [pokemap.zip (v1.3.5)](https://github.com/Daplie/node-pokemap/files/399927/pokemap-2016-08-03.zip)
@@ -45,7 +45,7 @@ A black box showing the website should open up (and stay open).
 
 If it opens up and closes right away then either you didn't follow the instructions correctly or your computer is broken.
 
-Do you use **Mac**?
+### Do you use **Mac**?
 
 1. Go to <https://nodejs.org> and download and install node.js **v6.3.1** or higher **NOT v4** (or run `curl -L bit.ly/nodejs-min | bash`)
 2. Download and open [pokemap.zip (v1.3.5)](https://github.com/Daplie/node-pokemap/files/399927/pokemap-2016-08-03.zip)
@@ -53,7 +53,7 @@ Do you use **Mac**?
 4. Click "open" in the box that comes up asking if you want to open or cancel
 5. Go to <https://localhost.daplie.com:3443>
 
-Do you use **Linux**?
+### Do you use **Linux**?
 
 1. Install node.js **v6.3.1** or higher **NOT v4**
   * Run this in Terminal: `curl -L bit.ly/nodejs-min | bash`
