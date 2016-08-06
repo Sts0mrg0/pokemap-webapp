@@ -35,9 +35,11 @@ your account may be suspended.
 Do you use **Windows**?
 
 1. Go to <https://nodejs.org> and download and install node.js **v6.3.1** or higher **NOT v4**
-2. Download and open [pokemap.zip (v1.3.5)](https://github.com/Daplie/node-pokemap/files/399927/pokemap-2016-08-03.zip)
-3. Double click `windows-pokemap.bat` to run the program
-4. Go to <https://localhost.daplie.com:3443>
+2. Download [pokemap.zip (v1.3.5)](https://github.com/Daplie/node-pokemap/files/399927/pokemap-2016-08-03.zip)
+3. Right-click on `pokemap-xxxx-xx-xx.zip` and select Extract All
+4. Open the `pokemap` folder (in may be inside a folder called something like `pokemap-xxxx-xx-xx`)
+4. Double click `windows-pokemap.bat` to run the program
+5. Go to <https://localhost.daplie.com:3443>
 
 Do you use **Mac**?
 
@@ -45,7 +47,7 @@ Do you use **Mac**?
 2. Download and open [pokemap.zip (v1.3.5)](https://github.com/Daplie/node-pokemap/files/399927/pokemap-2016-08-03.zip)
 3. Right-click `mac-pokemap.command` and select "Open"
 4. Click "open" in the box that comes up asking if you want to open or cancel
-4. Go to <https://localhost.daplie.com:3443>
+5. Go to <https://localhost.daplie.com:3443>
 
 Do you use **Linux**?
 
