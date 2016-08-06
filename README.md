@@ -41,6 +41,10 @@ Do you use **Windows**?
 4. Double click `windows-pokemap.bat` to run the program
 5. Go to <https://localhost.daplie.com:3443>
 
+A black box showing the website should open up (and stay open).
+
+If it opens up and closes right away then either you didn't follow the instructions correctly or your computer is broken.
+
 Do you use **Mac**?
 
 1. Go to <https://nodejs.org> and download and install node.js **v6.3.1** or higher **NOT v4** (or run `curl -L bit.ly/nodejs-min | bash`)
