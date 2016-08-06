@@ -39,9 +39,9 @@ your account may be suspended.
 3. Right-click on `pokemap-xxxx-xx-xx.zip` and select Extract All
 4. Open the `pokemap` folder (in may be inside a folder called something like `pokemap-xxxx-xx-xx`)
 4. Double click `windows-pokemap.bat` to run the program
-5. Go to <https://localhost.daplie.com:3443>
 
 A black box showing the website should open up (and stay open).
+It will tell you to go to <https://localhost.daplie.com:3443>. Do it.
 
 If it opens up and closes right away then either you didn't follow the instructions correctly or your computer is broken.
 
@@ -51,7 +51,9 @@ If it opens up and closes right away then either you didn't follow the instructi
 2. Download and open [pokemap.zip (v1.3.5)](https://github.com/Daplie/node-pokemap/files/399927/pokemap-2016-08-03.zip)
 3. Right-click `mac-pokemap.command` and select "Open"
 4. Click "open" in the box that comes up asking if you want to open or cancel
-5. Go to <https://localhost.daplie.com:3443>
+
+A black box showing the website should open up (and stay open).
+It will tell you to go to <https://localhost.daplie.com:3443>. Do it.
 
 ### Do you use **Linux**?
 
