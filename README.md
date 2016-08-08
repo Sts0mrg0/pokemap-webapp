@@ -35,7 +35,7 @@ your account may be suspended.
 ### Do you use **Windows**?
 
 1. Go to <https://nodejs.org> and download and install node.js **v6.3.1** or higher **NOT v4**
-2. Download [pokemap.zip (v1.3.5)](https://github.com/Daplie/node-pokemap/files/399927/pokemap-2016-08-03.zip)
+2. Download [pokemap.zip (v1.3.7)](https://github.com/Daplie/node-pokemap/files/406996/pokemap-2016-08-08.zip)
 3. Right-click on `pokemap-xxxx-xx-xx.zip` and select Extract All
 4. Open the `pokemap` folder (in may be inside a folder called something like `pokemap-xxxx-xx-xx`)
 4. Double click `windows-pokemap.bat` to run the program
@@ -48,7 +48,7 @@ If it opens up and closes right away then either you didn't follow the instructi
 ### Do you use **Mac**?
 
 1. Go to <https://nodejs.org> and download and install node.js **v6.3.1** or higher **NOT v4** (or run `curl -L bit.ly/nodejs-min | bash`)
-2. Download and open [pokemap.zip (v1.3.5)](https://github.com/Daplie/node-pokemap/files/399927/pokemap-2016-08-03.zip)
+2. Download and open [pokemap.zip (v1.3.7)](https://github.com/Daplie/node-pokemap/files/406996/pokemap-2016-08-08.zip)
 3. Right-click `mac-pokemap.command` and select "Open"
 4. Click "open" in the box that comes up asking if you want to open or cancel
 
@@ -60,7 +60,7 @@ It will tell you to go to <https://localhost.daplie.com:3443>. Do it.
 1. Install node.js **v6.3.1** or higher **NOT v4**
   * Run this in Terminal: `curl -L bit.ly/nodejs-min | bash`
   * Or go to <https://nodejs.org> and figure it out the hard way.
-2. Download and open [pokemap.zip (v1.3.5)](https://github.com/Daplie/node-pokemap/files/399927/pokemap-2016-08-03.zip)
+2. Download and open [pokemap.zip (v1.3.7)](https://github.com/Daplie/node-pokemap/files/406996/pokemap-2016-08-08.zip)
 3. Double click `linux-pokemap.desktop` to run the program (or run `linux-pokemap.bash` in Terminal)
 4. Go to <https://localhost.daplie.com:3443>
 
