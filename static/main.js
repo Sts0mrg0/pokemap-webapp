@@ -316,6 +316,7 @@ $(function () {
 
       localStorage.setItem('accessToken', sess.accessToken);
       $('.js-login-container').hide();
+      $('.js-logout-container').show();
 
       // You can try using the default key... but it won't work for you, or not for long
       if ('AIzaSyB0Dqa90ZCmlwh7oPHkgfr2-cMMkufLBQE' !== CONFIG.gmaps_key) {
@@ -387,7 +388,6 @@ $(function () {
 
     if (CONFIG.requireLogin && !sess.accessToken) {
       $('.js-login-container').show();
-      return;
     }
     else {
       poke.startHeartbeat(sess, beforeHeartbeat, onHeartbeat);
@@ -395,6 +395,12 @@ $(function () {
       $('.js-geolocation-container').show();
       $('.js-logout-container').show();
     }
+    
+    var script = document.createElement('script');
+		script.src = 'https://maps.googleapis.com/maps/api/js?key=' + CONFIG.gmaps_key + '&callback=initMap&libraries=places';
+		script.async = true;
+		script.defer = true;
+		document.getElementsByTagName('body')[0].appendChild(script);
   });
 
 });
