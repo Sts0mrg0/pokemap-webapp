@@ -40,7 +40,7 @@
 			<a href="#nav">Filter</a>
 			<h1><a href="#">Pokémon Go Map</a></h1>
       <h1><button type="button" class="js-geolocation">Update Location Now</button></h1>
-      <h1 class="js-logout-container"><button type="button" class="js-logout">Logout</button></h1>
+      <h1 class="js-logout-container" style="display: none"><button type="button" class="js-logout">Logout</button></h1>
 		</header>
 
 		<!-- Nav -->
@@ -202,13 +202,6 @@
 
 	<script type="text/javascript" src="config.js"></script>
 
-	<script>
-		var script = document.createElement('script');
-		script.src = 'https://maps.googleapis.com/maps/api/js?key=' + CONFIG.gmaps_key + '&callback=initMap&libraries=places';
-		script.async = true;
-		script.defer = true;
-		document.getElementsByTagName('body')[0].appendChild(script);
-	</script>
 	<script type="text/javascript" src="static/scan.js"></script>
 	<script type="text/javascript" src="static/poke.js"></script>
 	<script type="text/javascript" src="static/map.js"></script>
